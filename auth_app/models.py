@@ -19,7 +19,8 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-class UserManager(BaseUserManager):
+
+class MyUserManager(BaseUserManager):
 
     def _create_user(self, username, password, **extra_fields):
         """
@@ -61,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 
-    objects = UserManager()
+    objects = MyUserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['first_name', 'last_name']

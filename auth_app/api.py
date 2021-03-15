@@ -1,11 +1,11 @@
-from rest_framework import viewsets, permissions, status
-from rest_framework.authtoken.models import Token
+from rest_framework import viewsets
+from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission, SAFE_METHODS
-from rest_framework.response import Response
-from rest_framework.views import APIView
+
 
 from auth_app.serializers import UserSerializer
 from .models import User
+
 
 class IsStaffOrReadOnly(BasePermission):
     """
@@ -21,26 +21,14 @@ class IsStaffOrReadOnly(BasePermission):
             request.user.is_staff
         )
 
-class CreateUserAPIView(APIView):
-    permission_classes = (AllowAny,)
 
-    def post(self, request):
-        user = request.data
-        serializer = UserSerializer(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class CreateUserAPIView(CreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = (IsStaffOrReadOnly, IsAuthenticated,)
     serializer_class = UserSerializer
 
-class UsersTokenUpdate(APIView):
-    permission_classes = (AllowAny,)
-
-    def get(self, request):
-        for user in User.objects.all():
-            Token.objects.get_or_create(user=user)
-        response = {'Message': 'All Tokens Updated'}
-        return Response(response, status=status.HTTP_200_OK)

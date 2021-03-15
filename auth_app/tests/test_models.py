@@ -9,6 +9,7 @@ class SettingsTest(TestCase):
         self.assertTrue('auth_app.apps.AuthAppConfig' in INSTALLED_APPS)
         self.assertTrue('auth_app.User' == AUTH_USER_MODEL)
 
+
 class UserManagerTest(TestCase):
 
     def setUp(self):

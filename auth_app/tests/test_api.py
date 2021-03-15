@@ -1,6 +1,6 @@
 import json
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from faker import Faker
 from rest_framework import status
 from rest_framework.reverse import reverse
