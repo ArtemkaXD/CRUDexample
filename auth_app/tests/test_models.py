@@ -1,5 +1,5 @@
 from django.test import TestCase
-from CRUDexemple.settings import AUTH_USER_MODEL, INSTALLED_APPS
+from CRUDexample.settings import AUTH_USER_MODEL, INSTALLED_APPS
 
 from auth_app.models import User
 
