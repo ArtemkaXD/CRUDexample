@@ -23,7 +23,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     """
     username = models.CharField(max_length=32, unique=True)
-    email = models.CharField(max_length=1, null=True)
+    email = models.CharField(max_length=1, null=True, blank=False)
     first_name = models.CharField(max_length=32, blank=True)
     last_name = models.CharField(max_length=32, blank=True)
     is_active = models.BooleanField(default=True)
@@ -34,7 +34,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['first_name', 'last_name']
-
-    def save(self, *args, **kwargs):
-        super(User, self).save(*args, **kwargs)
-        return self
