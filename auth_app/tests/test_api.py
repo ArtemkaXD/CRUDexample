@@ -41,8 +41,8 @@ class GetUsersTest(TestCase):
             data=json.dumps(payload),
             content_type='application/json'
         )
-        token = response.data
-        client.credentials(HTTP_AUTHORIZATION='Token ' + token['token'])
+        self.admin_token = response.data['token']
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.admin_token}')
 
     def test_get_all(self):
         response = client.get(reverse('auth_app:users-list'))
@@ -142,8 +142,8 @@ class UpdateUsersTest(TestCase):
             data=json.dumps(payload),
             content_type='application/json'
         )
-        token = response.data
-        client.credentials(HTTP_AUTHORIZATION='Token ' + token['token'])
+        self.admin_token = response.data['token']
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.admin_token}')
 
     def test_valid_update_user(self):
         response = client.put(
@@ -224,7 +224,7 @@ class PermissionsTest(TestCase):
         self.user_token = response.data['token']
 
     def test_admin_update_permissions(self):
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.admin_token)
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.admin_token}')
         response = client.put(
             reverse('auth_app:users-detail', kwargs={'pk': self.user.pk}),
             data=json.dumps(self.valid_payload),
@@ -233,7 +233,7 @@ class PermissionsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_user_update_permissions(self):
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.user_token)
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.user_token}')
         response = client.put(
             reverse('auth_app:users-detail', kwargs={'pk': self.user.pk}),
             data=json.dumps(self.valid_payload),
@@ -242,7 +242,7 @@ class PermissionsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_user_get_permissions(self):
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.user_token)
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.user_token}')
         response = client.get(
             reverse('auth_app:users-detail', kwargs={'pk': self.user.pk}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)

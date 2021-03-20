@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework import routers
 from rest_framework.authtoken import views
 
-from .api import CreateUserAPIView, UserViewSet
+from .views import CreateUserAPIView, UserViewSet
 
 urlpatterns = [
     path('api/create/', CreateUserAPIView.as_view(), name='create'),
