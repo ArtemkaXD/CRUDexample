@@ -85,9 +85,31 @@ class CreateUsersTest(TestCase):
             'last_name': user_profile['name'].partition(' ')[2]
         }
 
+        admin_profile = fake.simple_profile()
+        self.admin = User.objects.create_superuser(
+            username=admin_profile['username'], password=admin_profile['mail'],
+            first_name=admin_profile['name'].partition(' ')[0],
+            last_name=admin_profile['name'].partition(' ')[2]
+        )
+
+        # create token for admin
+        payload = {
+            'username': admin_profile['username'],
+            'password': admin_profile['mail']
+        }
+        response = client.post(
+            reverse('auth_app:create_token'),
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.admin_token = response.data['token']
+        client.credentials(HTTP_AUTHORIZATION=f'Token {self.admin_token}')
+
+
+
     def test_create_valid_user(self):
         response = client.post(
-            reverse('auth_app:create'),
+            reverse('auth_app:users-list'),
             data=json.dumps(self.valid_payload),
             content_type='application/json'
         )
@@ -95,7 +117,7 @@ class CreateUsersTest(TestCase):
 
     def test_create_invalid_user(self):
         response = client.post(
-            reverse('auth_app:create'),
+            reverse('auth_app:users-list'),
             data=json.dumps(self.invalid_payload),
             content_type='application/json'
         )
