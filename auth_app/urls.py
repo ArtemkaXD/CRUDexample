@@ -6,7 +6,7 @@ from .views import UserViewSet
 
 urlpatterns = [
     path('api/api-token-auth/', views.obtain_auth_token, name='create_token'),
-               ]
+]
 
 router = routers.DefaultRouter()
 router.register('api/users', UserViewSet, basename='users')

@@ -1,12 +1,12 @@
 import json
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from faker import Faker
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
-from auth_app.models import User
 from auth_app.serializers import UserSerializer
 
 # initialize the APIClient and Faker
@@ -25,13 +25,15 @@ class GetUsersTest(TestCase):
             first_name=admin_profile['name'].partition(' ')[0],
             last_name=admin_profile['name'].partition(' ')[2]
         )
+
         for p in [fake.profile() for _ in range(5)]:
             User.objects.create_user(
                 username=p['username'], password=p['mail'],
                 first_name=p['name'].partition(' ')[0],
                 last_name=p['name'].partition(' ')[2]
-            )
-        #create token for admin
+        )
+
+        # create token for admin
         payload = {
             'username': admin_profile['username'],
             'password': admin_profile['mail']
@@ -53,7 +55,8 @@ class GetUsersTest(TestCase):
 
     def test_get_valid_single_user(self):
         response = client.get(
-            reverse('auth_app:users-detail', kwargs={'pk': self.admin.pk}))
+            reverse('auth_app:users-detail', kwargs={'pk': self.admin.pk})
+        )
         user = User.objects.get(pk=self.admin.pk)
         serializer = UserSerializer(user)
         self.assertEqual(response.data, serializer.data)
@@ -61,7 +64,8 @@ class GetUsersTest(TestCase):
 
     def test_get_invalid_single_user(self):
         response = client.get(
-            reverse('auth_app:users-detail', kwargs={'pk': 11}))
+            reverse('auth_app:users-detail', kwargs={'pk': 11})
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -104,8 +108,6 @@ class CreateUsersTest(TestCase):
         )
         self.admin_token = response.data['token']
         client.credentials(HTTP_AUTHORIZATION=f'Token {self.admin_token}')
-
-
 
     def test_create_valid_user(self):
         response = client.post(
@@ -154,7 +156,8 @@ class UpdateUsersTest(TestCase):
             'first_name': user_profile['name'].partition(' ')[0],
             'last_name': user_profile['name'].partition(' ')[2]
         }
-        #create token for admin
+
+        # create token for admin
         payload = {
             'username': admin_profile['username'],
             'password': admin_profile['mail']
@@ -179,7 +182,8 @@ class UpdateUsersTest(TestCase):
         response = client.put(
             reverse('auth_app:users-detail', kwargs={'pk': self.user.pk}),
             data=json.dumps(self.invalid_payload),
-            content_type='application/json')
+            content_type='application/json'
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_valid_delete_user(self):
@@ -194,7 +198,8 @@ class UpdateUsersTest(TestCase):
         response = client.delete(
             reverse('auth_app:users-detail', kwargs={'pk': 11}),
             data=json.dumps(self.invalid_payload),
-            content_type='application/json')
+            content_type='application/json'
+        )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -209,6 +214,7 @@ class PermissionsTest(TestCase):
             first_name=admin_profile['name'].partition(' ')[0],
             last_name=admin_profile['name'].partition(' ')[2]
         )
+
         # create token for admin
         payload = {
             'username': admin_profile['username'],
@@ -266,5 +272,6 @@ class PermissionsTest(TestCase):
     def test_user_get_permissions(self):
         client.credentials(HTTP_AUTHORIZATION=f'Token {self.user_token}')
         response = client.get(
-            reverse('auth_app:users-detail', kwargs={'pk': self.user.pk}))
+            reverse('auth_app:users-detail', kwargs={'pk': self.user.pk})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
